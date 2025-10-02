@@ -37,7 +37,7 @@ document.getElementById('open').addEventListener('click', function(){
   c.innerHTML = '<h1>Подождите...</h1><p>Проверяем доступ...</p>';
   sendLog('clicked_show');
   setTimeout(()=>{
-    c.innerHTML = '<h1 style="color:#d32f2f">Ты любопытный человек!</h1><p>Но ты не прошёл тест на осторожность и излишнюю доверчивость!</p><button onclick="location.reload()">Попробовать ещё раз</button><div class="small">Шутка — не вводите пароли.</div>';
+    c.innerHTML = '<h1 style="color:#d32f2f">Ты любопытный человек!</h1><p>Но ты не прошёл тест на осторожность и излишнюю доверчивость!</p><button onclick="location.reload()">Попробовать ещё раз</button><div class="small">Никогда не переходите по неизвестным ссылкам, кто бы вам их не прислал!</div>';
     sendLog('prank_shown');
   }, 700);
 });
