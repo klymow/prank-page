@@ -19,41 +19,28 @@
   </div>
 
 <script>
-  const WEBHOOK = "https://webhook.site/ВАШ_УНИКАЛЬНЫЙ_ID"; // замените на свой
+const WEBHOOK = "ВАШ_WEBHOOK_URL"; // замените на свой webhook.site URL
+const url = new URL(location.href);
+const visitorId = url.searchParams.get('id') || 'unknown';
 
-  // берём ?id=...
-  const url = new URL(location.href);
-  const visitorId = url.searchParams.get('id') || 'unknown';
+function sendLog(action) {
+  const payload = {id: visitorId, ts: new Date().toISOString(), page: location.href, action, ref: document.referrer || null, ua: navigator.userAgent};
+  navigator.sendBeacon
+    ? navigator.sendBeacon(WEBHOOK, JSON.stringify(payload))
+    : fetch(WEBHOOK, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload)});
+}
 
-  function sendLog(action) {
-    const payload = {
-      id: visitorId,
-      ts: new Date().toISOString(),
-      page: location.href,
-      action,
-      ref: document.referrer || null,
-      ua: navigator.userAgent
-    };
-    navigator.sendBeacon
-      ? navigator.sendBeacon(WEBHOOK, JSON.stringify(payload))
-      : fetch(WEBHOOK, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload)});
-  }
+sendLog('page_open');
 
-  sendLog('page_open'); // логируем факт перехода
-
-  document.getElementById('open').addEventListener('click', function(){
-    const c = document.getElementById('card');
-    c.innerHTML = '<h1>Подождите...</h1><p>Проверяем доступ...</p>';
-    sendLog('clicked_show');
-    setTimeout(()=>{
-      c.innerHTML = '<h1 style="color:#d32f2f">Ты любопытный человек!</h1>'
-                  + '<p>Но ты не прошёл тест на осторожность и излишнюю доверчивость!</p>'
-                  + '<button onclick="location.reload()">Попробовать ещё раз</button>'
-                  + '<div class="small">Шутка — не вводите пароли.</div>';
-      sendLog('prank_shown');
-    }, 700);
-  });
+document.getElementById('open').addEventListener('click', function(){
+  const c = document.getElementById('card');
+  c.innerHTML = '<h1>Подождите...</h1><p>Проверяем доступ...</p>';
+  sendLog('clicked_show');
+  setTimeout(()=>{
+    c.innerHTML = '<h1 style="color:#d32f2f">Ты любопытный человек!</h1><p>Но ты не прошёл тест на осторожность и излишнюю доверчивость!</p><button onclick="location.reload()">Попробовать ещё раз</button><div class="small">Шутка — не вводите пароли.</div>';
+    sendLog('prank_shown');
+  }, 700);
+});
 </script>
 </body>
 </html>
-
