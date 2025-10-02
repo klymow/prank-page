@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Фото с отдыха</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#f6f7fb;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+  .card{background:#fff;padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(20,20,50,.06);max-width:720px;text-align:center}
+  button{padding:10px 18px;border-radius:8px;border:0;cursor:pointer}
+  .small{font-size:13px;color:#666;margin-top:12px}
+</style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>Хотите посмотреть все мои фото с отдыха, включая самые интересные?</h1>
+    <p>Нажмите кнопку ниже — откроется полный альбом.</p>
+    <button id="open">Посмотреть</button>
+    <div class="small">P.S. Это просто розыгрыш — не вводите пароли.</div>
+  </div>
+
+<script>
+  const WEBHOOK = "https://webhook.site/ВАШ_УНИКАЛЬНЫЙ_ID"; // замените на свой
+
+  // берём ?id=...
+  const url = new URL(location.href);
+  const visitorId = url.searchParams.get('id') || 'unknown';
+
+  function sendLog(action) {
+    const payload = {
+      id: visitorId,
+      ts: new Date().toISOString(),
+      page: location.href,
+      action,
+      ref: document.referrer || null,
+      ua: navigator.userAgent
+    };
+    navigator.sendBeacon
+      ? navigator.sendBeacon(WEBHOOK, JSON.stringify(payload))
+      : fetch(WEBHOOK, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload)});
+  }
+
+  sendLog('page_open'); // логируем факт перехода
+
+  document.getElementById('open').addEventListener('click', function(){
+    const c = document.getElementById('card');
+    c.innerHTML = '<h1>Подождите...</h1><p>Проверяем доступ...</p>';
+    sendLog('clicked_show');
+    setTimeout(()=>{
+      c.innerHTML = '<h1 style="color:#d32f2f">Ты любопытный человек!</h1>'
+                  + '<p>Но ты не прошёл тест на осторожность и излишнюю доверчивость!</p>'
+                  + '<button onclick="location.reload()">Попробовать ещё раз</button>'
+                  + '<div class="small">Шутка — не вводите пароли.</div>';
+      sendLog('prank_shown');
+    }, 700);
+  });
+</script>
+</body>
+</html>
+
